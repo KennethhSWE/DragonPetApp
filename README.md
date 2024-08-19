@@ -1,79 +1,59 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# DragonPetApp
 
-# Getting Started
+## Overview
+DragonPetApp is a mobile fitness application that gamifies physical activity by allowing users to hatch and grow a virtual pet dragon. The app tracks users' steps, miles walked, and calories burned by connecting to their Strava account. As users meet their fitness goals, their dragon evolves from an egg to different stages of life (baby, teenager, elder). Missing daily goals can stunt the dragon's growth, adding an element of challenge and motivation.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Features
+- **Fitness Tracking**: Syncs with Strava or other fitness tracking apps to track steps, miles walked, and calories burned.
+- **Dragon Evolution**: The dragon evolves based on the user's physical activity starting from an egg and growing to its full potential as you do!
+- **Daily Challenges**: Encourages users to meet daily fitness goals.
+- **Mulitple Dragons**: Different types of dragons collect them all fully growing their potential to Elder status.
+- **Interactive Interface**: With in depth graphs and charts to see how you and your Dragon pet are progressing. 
 
-## Step 1: Start the Metro Server
+## Installation
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+### Prerequisites
+- Apple or Android Phone
+- Understanding of APK files and how to install them.
+- Strava or google fitness or apple account for API access.
 
-To start Metro, run the following command from the _root_ of your React Native project:
+### Steps to Set Up Locally
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/DragonPetApp.git
+   cd DragonPetApp
 
-```bash
-# using npm
-npm start
 
-# OR using Yarn
-yarn start
-```
 
-## Step 2: Start your Application
+### Explanation:
+- **Features**: Highlight the main functionalities of your app.
+- **Installation**: Detailed steps on how to set up the project locally.
+- **Usage**: How users can start using the app after installation.
+- **Roadmap**: Hoping to add more features and ability to pull data from other fitness apps. Also working on Animations for the hatching and growth. 
+- **Contributing**: If you want to Contribute please reach out via email. **Looking for help with animation and character assets.**
+- **License**: MIT License
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+Copyright (c) [2024] [Kenneth Hayes]
 
-### For Android
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-```bash
-# using npm
-npm run android
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-# OR using Yarn
-yarn android
-```
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
-### For iOS
+- **Contact**: Please feel free to contact me at KennethCHayes@gmai.com 
 
-```bash
-# using npm
-npm run ios
+Feel free to customize this template based on your specific needs. The `README.md` file will live in the root directory of your project. Once you create it, you can add and commit it to your GitHub repository.
 
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
-
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
-
-## Step 3: Modifying your App
-
-Now that you have successfully run the app, let's modify it.
-
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
-
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
