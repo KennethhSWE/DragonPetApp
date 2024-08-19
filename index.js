@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // index.js
 
 // Import required packages
@@ -33,3 +34,10 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
+=======
+import { AppRegistry } from 'react-native';
+import Navigation from './src/Navigation';
+import { name as appName } from './app.json';
+
+AppRegistry.registerComponent(appName, () => Navigation);
+>>>>>>> bb5d3ac (Initial commit)
