@@ -20,7 +20,7 @@ DragonPetApp is a mobile fitness application that gamifies physical activity by 
 ### Steps to Set Up Locally
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/DragonPetApp.git
+   git clone https://github.com/KennethhSWE/DragonPetApp.git
    cd DragonPetApp
 
 
