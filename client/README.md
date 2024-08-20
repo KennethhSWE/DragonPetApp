@@ -26,9 +26,9 @@ DragonPetApp is a mobile fitness application that gamifies physical activity by 
 
 
 ### Explanation:
-- **Features**: Highlight the main functionalities of your app.
+- **Features**: Track steps, miles, calories and dragon growth.
 - **Installation**: Detailed steps on how to set up the project locally.
-- **Usage**: How users can start using the app after installation.
+- **Usage**: simple and easy to use.
 - **Roadmap**: Hoping to add more features and ability to pull data from other fitness apps. Also working on Animations for the hatching and growth. 
 - **Contributing**: If you want to Contribute please reach out via email. **Looking for help with animation and character assets.**
 - **License**: MIT License
