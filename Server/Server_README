@@ -1,0 +1,21 @@
+
+### 2. Server Side `README.md`
+
+```markdown
+# DragonPetApp - Server
+
+This is the server-side component of the DragonPetApp. It handles API requests, authentication with Strava, and serves as the backend for the mobile application.
+
+## Features
+
+- **Express Server**: Lightweight server built with Express.js.
+- **CORS Enabled**: Allows cross-origin requests from the client.
+- **Body Parsing**: JSON body parsing for incoming requests.
+- **Environment Variables**: Securely manage sensitive information with dotenv.
+
+## Installation
+
+1. **Clone the Repository:**
+
+   ```bash
+   git clone https://github.com/KennethhSWE/DragonPetApp.git
