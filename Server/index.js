@@ -14,6 +14,9 @@ dotenv.config();
 // Create an instance of Express server
 const app = express();
 
+//createe an insrance of MongoDB
+const mongoose =require('mongoose');
+
 // Middleware setup to parse incoming requests
 app.use(cors());
 app.use(bodyParser.json());
