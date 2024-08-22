@@ -2,45 +2,71 @@
 //add's a hook that makes it where I can add a state to a functional component.
 
 import React, { useEffect, useState } from 'react';
-import { Linking } from 'react-native';
-import { useNavigation} from '@react-navigation/native'; 
+import { ActivityIndicator, Linking } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; 
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, Image, Animated, Dimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import DragonEgg from '../components/DragonEgg';
-import { withSafeAreaInsets } from 'react-native-safe-area-context';
 import nestImage from '../../src/assets/art/egg-nest.png';
 
-const {width} = Dimensions.get('window'); //Get the width of users phone sets as a const called width. 
-// below this is the main functional component of my app 
+const { width } = Dimensions.get('window'); // Get the width of users phone sets as a const called width. 
+
+// Below this is the main functional component of my app 
 const App = () => {
   const navigation = useNavigation();
   const [isPanelVisible, setIsPanelVisible] = useState(false);
   const slideAnim = useState(new Animated.Value(width))[0];
-  
-    // Function to handle incoming deep links for API use 
-    const handleDeepLink = (event) => {
-      const data = Linking.parse(event.url);
-      if (data && data.path && data.path === '/strava') {
-        const queryParams = data.queryParams;
-        if (queryParams && queryParams.code) {
-          const authCode = queryParams.code;
-          // This authCode is to request access tokens from Strava
-        } 
-      }
-    };
+  const [isLoading, setIsLoading] = useState(true);
+  const [miles_walked, setMilesWalked] = useState(0);
+  const [miles_ran, setMilesRan] = useState(0);
 
-    useEffect(() => {
-      Linking.addEventListener('url', handleDeepLink);
-      Linking.getInitialURL().then((url) => {
-        if (url) {
-          handleDeepLink({url});
-        }
+  const stravaAuthUrl = `https://www.strava.com/oauth/mobile/authorize?client_id=132630&redirect_uri=https://dragonpetapp.onrender.com&response_type=code&scope=activity:read_all,activity:write`;
+
+  // Function to handle incoming deep links for API use 
+  const handleDeepLink = async (event) => { 
+    console.log("Deep link event reached:", event.url);
+    const data = Linking.parse(event.url);
+    console.log("Parsed Data:", data);
+  
+    if (data && data.queryParams && data.queryParams.success === 'true') {
+      // If success=true is received, fetch user data
+      fetchUserData();
+    } else {
+      console.error('Failed to authenticate user via deep link.');
+    }
+  
+    setIsLoading(false); // Stop showing the loading indicator
+  };
+
+  // Fetch user data from the backend after authentication
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch('https://dragonpetapp.onrender.com/user-data'); // Adjust this endpoint to match your backend
+      const result = await response.json();
+
+      if (response.ok) {
+        setMilesWalked(result.miles_walked);
+        setMilesRan(result.miles_ran);
+      } else {
+        console.error('Failed to fetch user data:', result);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  useEffect(() => {
+    Linking.addEventListener('url', handleDeepLink);
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        handleDeepLink({ url });
+      }
     });
 
     return () => {
-Linking.removeAllListeners('url', handleDeepLink);
+      Linking.removeAllListeners('url', handleDeepLink);
     };
-  }, []); 
+  }, []);
 
   const toggleSettingsPanel = () => {
     if (isPanelVisible) {
@@ -77,7 +103,9 @@ Linking.removeAllListeners('url', handleDeepLink);
 
         <Animated.View style={[styles.settingsPanel, { transform: [{ translateX: slideAnim }] }]}>
           <Text style={styles.panelHeader}>Settings</Text>
-          <TouchableOpacity onPress={() => {/* Link Strava Account */}}>
+          <TouchableOpacity onPress={() => {
+             Linking.openURL(stravaAuthUrl).catch(err => console.error("Failed to open URL:", err));
+             }}>
             <Text style={styles.panelItem}>Link Strava Account</Text>
           </TouchableOpacity>
           {/* Add more settings options here */}
@@ -90,7 +118,10 @@ Linking.removeAllListeners('url', handleDeepLink);
             imageStyle={styles.borderImage}
           >
             <Text style={styles.sidebarHeader}>Miles {"\n"} Walked</Text>
-            <Text style={styles.sidebarValue}>0</Text>
+            {isLoading? 
+            (<ActivityIndicator size="large" color="#00ff00" />
+            ):(<Text style={styles.sidebarValue}>{miles_walked}</Text>
+            )}
           </ImageBackground>
 
           <ImageBackground
@@ -99,7 +130,10 @@ Linking.removeAllListeners('url', handleDeepLink);
             imageStyle={styles.borderImage}
           >
             <Text style={styles.sidebarHeader}>Miles {"\n"} Ran</Text>
-            <Text style={styles.sidebarValue}>0</Text>
+            {isLoading? 
+            (<ActivityIndicator size="large" color="#00ff00" />
+            ):(<Text style={styles.sidebarValue}>{miles_ran}</Text>
+            )}
           </ImageBackground>
 
           <ImageBackground
@@ -165,9 +199,10 @@ Linking.removeAllListeners('url', handleDeepLink);
         </View>
       </View>
     </ImageBackground>
-  );
+   );
 };
 
+    //Styling of the HomeScreen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
