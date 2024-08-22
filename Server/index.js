@@ -6,16 +6,13 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const axios = require('axios');
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); // Import mongoose only once
 
 // Load environment variables from .env file
 dotenv.config();
 
 // Create an instance of Express server
 const app = express();
-
-//createe an insrance of MongoDB
-const mongoose =require('mongoose');
 
 // Middleware setup to parse incoming requests
 app.use(cors());
