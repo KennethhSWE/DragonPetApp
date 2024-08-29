@@ -8,6 +8,7 @@ import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, Image, Anima
 import LinearGradient from 'react-native-linear-gradient';
 import DragonEgg from '../components/DragonEgg';
 import nestImage from '../../src/assets/art/egg-nest.png';
+import 'react-native-url-polyfill/auto';
 
 const { width } = Dimensions.get('window'); // Get the width of users phone sets as a const called width. 
 
@@ -25,23 +26,30 @@ const App = () => {
   // Function to handle incoming deep links for API use 
   const handleDeepLink = async (event) => { 
     console.log("Deep link event reached:", event.url);
-    const data = Linking.parse(event.url);
-    console.log("Parsed Data:", data);
   
-    if (data && data.queryParams && data.queryParams.success === 'true') {
-      // If success=true is received, fetch user data
-      fetchUserData();
-    } else {
-      console.error('Failed to authenticate user via deep link.');
+    try {
+      const url = new URL(event.url);;
+      const success = url.searchParams.get('success');
+
+      console.log("Parsed Data: ", success);
+
+      if (success === 'true') {
+        fetchUserData();
+      } else {
+        console.error('Failed to authenticate user via deep link.');
+      }
+    } catch (error) {
+      console.error('Error parsing the URL for code:', error);
+
     }
-  
+    
     setIsLoading(false); // Stop showing the loading indicator
   };
 
   // Fetch user data from the backend after authentication
   const fetchUserData = async () => {
     try {
-      const response = await fetch('https://dragonpetapp.onrender.com/user-data'); // Adjust this endpoint to match your backend
+      const response = await fetch('https://dragonpetapp.onrender.com/user-data'); 
       const result = await response.json();
 
       if (response.ok) {

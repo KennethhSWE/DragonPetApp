@@ -65,13 +65,33 @@ app.get('/strava/callback', async (req, res) => {
         );
 
         // Redirect back to the app with a success message
-        const redirectUrl = `dragonpetapp://auth/callback?success=true`;
+        const redirectUrl = `dragonpetapp://auth/callback`;
         res.redirect(redirectUrl);
     } catch (error) {
         console.error('Error exchanging authorization code for access token:', error.response?.data || error.message);
         res.status(500).send('Failed to exchange authorization code for access token');
     }
 });
+
+// Define a route to get user data
+app.get('/user-data', async (req, res) => {
+    try {
+        const token = await Token.findOne({ userId: req.query.userId });
+        if (!token) {
+            return res.status(404).send({ error: 'User not found' });
+        }
+
+        // Here you can customize what user data you want to return
+        res.send({
+            miles_walked: 100, // Replace with actual data
+            miles_ran: 50,     // Replace with actual data
+        });
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;
