@@ -1,12 +1,10 @@
-// Server Side stores users tokens and refresh codes. Also handles the token exchange
-
 // Import required packages
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const axios = require('axios');
-const mongoose = require('mongoose'); // Import mongoose only once
+const mongoose = require('mongoose');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -19,7 +17,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection setup
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log('MongoDB connection error:', err));
 
@@ -33,43 +31,45 @@ const tokenSchema = new mongoose.Schema({
 
 const Token = mongoose.model('Token', tokenSchema);
 
-// Define a route for the home page
-app.get('/', (req, res) => {
-    res.send('Welcome to the DragonPet Server!');
-});
+// Define a route for handling root requests
+app.get('/', async (req, res) => {
+    // Check if the request contains a Strava authorization code
+    if (req.query.code) {
+        const authCode = req.query.code;
+        console.log("Received authorization code:", authCode);
 
-// Define a route for handling Strava OAuth callback
-app.get('/strava/callback', async (req, res) => {
-    const authCode = req.query.code;
+        try {
+            // Exchange authorization code for an access token
+            const response = await axios.post('https://www.strava.com/oauth/token', {
+                client_id: process.env.STRAVA_CLIENT_ID,
+                client_secret: process.env.STRAVA_CLIENT_SECRET,
+                code: authCode,
+                grant_type: 'authorization_code',
+            });
 
-    if (!authCode) {
-        return res.status(400).send('Authorization code is missing');
-    }
+            const { access_token, refresh_token, expires_at, athlete } = response.data;
+            console.log('Strava Response Data:', response.data);
 
-    try {
-        // Exchange authorization code for an access token
-        const response = await axios.post('https://www.strava.com/api/v3/oauth/token', {
-            client_id: process.env.STRAVA_CLIENT_ID,
-            client_secret: process.env.STRAVA_CLIENT_SECRET,
-            code: authCode,
-            grant_type: 'authorization_code',
-        });
+            // Store tokens in the database
+            await Token.findOneAndUpdate(
+                { userId: athlete.id },
+                { accessToken: access_token, refreshToken: refresh_token, expiresAt: expires_at },
+                { upsert: true }
+            );
 
-        const { access_token, refresh_token, expires_at, athlete } = response.data;
+            // Redirect back to the app with a success message using deep link
+            const redirectUrl = `dragonpetapp://auth/callback?success=true&code=${authCode}`;
+            console.log(`Redirecting to: ${redirectUrl}`);
+            res.redirect(redirectUrl);
 
-        // Store tokens in the database
-        await Token.findOneAndUpdate(
-            { userId: athlete.id },
-            { accessToken: access_token, refreshToken: refresh_token, expiresAt: expires_at },
-            { upsert: true }
-        );
-
-        // Redirect back to the app with a success message
-        const redirectUrl = `dragonpetapp://auth/callback`;
-        res.redirect(redirectUrl);
-    } catch (error) {
-        console.error('Error exchanging authorization code for access token:', error.response?.data || error.message);
-        res.status(500).send('Failed to exchange authorization code for access token');
+        } catch (error) {
+            console.error('Error exchanging authorization code for access token:', error.response?.data || error.message);
+            console.log("Full error object:", error); // Log the full error object for more context
+            res.status(500).send('Failed to exchange authorization code for access token');
+        }
+    } else {
+        // Handle normal requests to your domain
+        res.send('Welcome to the DragonPet Server!');
     }
 });
 
@@ -78,20 +78,24 @@ app.get('/user-data', async (req, res) => {
     try {
         const token = await Token.findOne({ userId: req.query.userId });
         if (!token) {
+            console.error('User not found for ID:', req.query.userId);  // Log when user data is not found
             return res.status(404).send({ error: 'User not found' });
         }
 
-        // Here you can customize what user data you want to return
+        // Log the retrieved token details
+        console.log('Retrieved token for user:', req.query.userId);
+
+        // Send user data (replace with actual data retrieval logic)
         res.send({
             miles_walked: 100, // Replace with actual data
             miles_ran: 50,     // Replace with actual data
         });
+
     } catch (error) {
         console.error('Error fetching user data:', error);
-        res.status(500).send('Internal server error');
+        res.status(500).json({ error: 'Failed to fetch user data' });
     }
 });
-
 
 // Start the server
 const PORT = process.env.PORT || 5000;

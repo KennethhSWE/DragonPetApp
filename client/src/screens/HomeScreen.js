@@ -21,7 +21,7 @@ const App = () => {
   const [miles_walked, setMilesWalked] = useState(0);
   const [miles_ran, setMilesRan] = useState(0);
 
-  const stravaAuthUrl = 'https://www.strava.com/oauth/mobile/authorize?client_id=132630&redirect_uri=https://www.dragonpetapp.onrender.com/strava/callback&response_type=code&scope=activity:read_all,activity:write';
+  const stravaAuthUrl = 'https://www.strava.com/oauth/mobile/authorize?client_id=132630&redirect_uri=https://dragonpetapp.onrender.com/strava/callback&response_type=code&scope=activity:read_all,activity:write';
 
   // Function to handle incoming deep links for API use 
   const handleDeepLink = async (event) => { 
@@ -35,9 +35,9 @@ const App = () => {
       console.log("All Params: ", [...url.searchParams.entries()]);
       console.log("Parsed Data: ", success);
 
-      if (success === 'true') {
+      if (success === 'true' && code) {
         console.log(`Authorization code recieved: ${code}`);
-        fetchUserData();
+        await fetchUserData();
       } else {
         console.error('Failed to authenticate user via deep link.');
       }
@@ -67,7 +67,9 @@ const App = () => {
   };
 
   useEffect(() => {
-    Linking.addEventListener('url', handleDeepLink);
+    const onUrlEvent = (event) => handleDeepLink(event);
+    Linking.addEventListener('url', onUrlEvent);
+    
     Linking.getInitialURL().then((url) => {
       if (url) {
         handleDeepLink({ url });
@@ -75,7 +77,7 @@ const App = () => {
     });
 
     return () => {
-      Linking.removeAllListeners('url', handleDeepLink);
+      Linking.removeEventListener('url', onUrlEvent);
     };
   }, []);
 
