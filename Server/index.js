@@ -58,12 +58,20 @@ app.get('/strava/callback', async (req, res) => {
         const { access_token, refresh_token, expires_at, athlete } = response.data;
         console.log('Strava Response Data:', response.data);
 
+        // Check if athlete data is present
+        if (!athlete || !athlete.id) {
+            console.error('Athlete data is missing from Strava response:', response.data);
+            return res.status(500).send('Athlete data missing from Strava response.');
+        }
+
         // Store tokens in the database
-        await Token.findOneAndUpdate(
+        const result = await Token.findOneAndUpdate(
             { userId: athlete.id },
             { accessToken: access_token, refreshToken: refresh_token, expiresAt: expires_at },
-            { upsert: true }
+            { upsert: true, new: true }
         );
+        console.log('Token stored/updated for userId:', athlete.id);
+        console.log('Stored token data:', result);
 
         // Redirect back to the app with a success message using deep link
         const redirectUrl = `dragonpetapp://auth/callback?success=true&code=${authCode}`;
@@ -79,15 +87,19 @@ app.get('/strava/callback', async (req, res) => {
 
 // Define a route to get user data
 app.get('/user-data', async (req, res) => {
+    const userId = req.query.userId;
+    console.log('Received userId for data request:', userId);
+
     try {
-        const token = await Token.findOne({ userId: req.query.userId });
+        const token = await Token.findOne({ userId });
         if (!token) {
-            console.error('User not found for ID:', req.query.userId);  // Log when user data is not found
+            console.error('User not found for ID:', userId);  // Log when user data is not found
             return res.status(404).send({ error: 'User not found' });
         }
 
         // Log the retrieved token details
-        console.log('Retrieved token for user:', req.query.userId);
+        console.log('Retrieved token for user:', userId);
+        console.log('Token details:', token);
 
         // Send user data (replace with actual data retrieval logic)
         res.send({
@@ -106,3 +118,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
