@@ -32,44 +32,48 @@ const tokenSchema = new mongoose.Schema({
 const Token = mongoose.model('Token', tokenSchema);
 
 // Define a route for handling root requests
-app.get('/', async (req, res) => {
-    // Check if the request contains a Strava authorization code
-    if (req.query.code) {
-        const authCode = req.query.code;
-        console.log("Received authorization code:", authCode);
+app.get('/', (req, res) => {
+    res.send('Welcome to the DragonPet Server!');
+});
 
-        try {
-            // Exchange authorization code for an access token
-            const response = await axios.post('https://www.strava.com/oauth/token', {
-                client_id: process.env.STRAVA_CLIENT_ID,
-                client_secret: process.env.STRAVA_CLIENT_SECRET,
-                code: authCode,
-                grant_type: 'authorization_code',
-            });
+// Define the /strava/callback route
+app.get('/strava/callback', async (req, res) => {
+    const authCode = req.query.code;
 
-            const { access_token, refresh_token, expires_at, athlete } = response.data;
-            console.log('Strava Response Data:', response.data);
+    if (!authCode) {
+        return res.status(400).send('Missing authorization code.');
+    }
 
-            // Store tokens in the database
-            await Token.findOneAndUpdate(
-                { userId: athlete.id },
-                { accessToken: access_token, refreshToken: refresh_token, expiresAt: expires_at },
-                { upsert: true }
-            );
+    console.log("Received authorization code:", authCode);
 
-            // Redirect back to the app with a success message using deep link
-            const redirectUrl = `dragonpetapp://auth/callback?success=true&code=${authCode}`;
-            console.log(`Redirecting to: ${redirectUrl}`);
-            res.redirect(redirectUrl);
+    try {
+        // Exchange authorization code for an access token
+        const response = await axios.post('https://www.strava.com/oauth/token', {
+            client_id: process.env.STRAVA_CLIENT_ID,
+            client_secret: process.env.STRAVA_CLIENT_SECRET,
+            code: authCode,
+            grant_type: 'authorization_code',
+        });
 
-        } catch (error) {
-            console.error('Error exchanging authorization code for access token:', error.response?.data || error.message);
-            console.log("Full error object:", error); // Log the full error object for more context
-            res.status(500).send('Failed to exchange authorization code for access token');
-        }
-    } else {
-        // Handle normal requests to your domain
-        res.send('Welcome to the DragonPet Server!');
+        const { access_token, refresh_token, expires_at, athlete } = response.data;
+        console.log('Strava Response Data:', response.data);
+
+        // Store tokens in the database
+        await Token.findOneAndUpdate(
+            { userId: athlete.id },
+            { accessToken: access_token, refreshToken: refresh_token, expiresAt: expires_at },
+            { upsert: true }
+        );
+
+        // Redirect back to the app with a success message using deep link
+        const redirectUrl = `dragonpetapp://auth/callback?success=true&code=${authCode}`;
+        console.log(`Redirecting to: ${redirectUrl}`);
+        res.redirect(redirectUrl);
+
+    } catch (error) {
+        console.error('Error exchanging authorization code for access token:', error.response?.data || error.message);
+        console.log("Full error object:", error); // Log the full error object for more context
+        res.status(500).send('Failed to exchange authorization code for access token');
     }
 });
 
