@@ -20,6 +20,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [miles_walked, setMilesWalked] = useState(0);
   const [miles_ran, setMilesRan] = useState(0);
+  const [userId, setUserId] = useState(null);
 
   const stravaAuthUrl = 'https://www.strava.com/oauth/mobile/authorize?client_id=132630&redirect_uri=https://dragonpetapp.onrender.com/strava/callback&response_type=code&scope=activity:read_all,activity:write';
 
@@ -28,7 +29,7 @@ const App = () => {
     console.log("Deep link event reached:", event.url);
   
     try {
-      const url = new URL(event.url);;
+      const url = new URL(event.url);
       const success = url.searchParams.get('success');
       const code = url.searchParams.get('code');
       
@@ -36,23 +37,27 @@ const App = () => {
       console.log("Parsed Data: ", success);
 
       if (success === 'true' && code) {
-        console.log(`Authorization code recieved: ${code}`);
-        await fetchUserData();
+        console.log(`Authorization code received: ${code}`);
+        await fetchUserData(code); // Pass the code to fetch user data
       } else {
         console.error('Failed to authenticate user via deep link.');
       }
     } catch (error) {
       console.error('Error parsing the URL for code:', error);
-
     }
     
     setIsLoading(false); // Stop showing the loading indicator
   };
 
   // Fetch user data from the backend after authentication
-  const fetchUserData = async () => {
+  const fetchUserData = async (authCode) => {
+    if (!userId) {
+      console.error('No userId available for fetching user data.');
+      return;
+    }
+    
     try {
-      const response = await fetch('https://dragonpetapp.onrender.com/user-data'); 
+      const response = await fetch(`https://dragonpetapp.onrender.com/user-data?userId=${userId}`); 
       const result = await response.json();
 
       if (response.ok) {
@@ -79,7 +84,7 @@ const App = () => {
     return () => {
       Linking.removeEventListener('url', onUrlEvent);
     };
-  }, []);
+  }, []); 
 
   const toggleSettingsPanel = () => {
     if (isPanelVisible) {
